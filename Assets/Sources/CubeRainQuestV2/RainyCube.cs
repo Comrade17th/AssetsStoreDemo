@@ -18,6 +18,7 @@ namespace CubeRainV2
 		private Rigidbody _rigidbody;
 		private Coroutine _coroutine;
 		private WaitForSeconds _waitLifetime;
+		private BombSpawner _bombSpawner;
 
 		private void Awake()
 		{
@@ -38,6 +39,11 @@ namespace CubeRainV2
 			}
 		}
 
+		public void SetBombSpawner(BombSpawner bombSpawner)
+		{
+			_bombSpawner = bombSpawner;
+		}
+
 		private void OnObstucleCollision()
 		{
 			if (_isCollided == false)
@@ -56,6 +62,8 @@ namespace CubeRainV2
 		{
 			_waitLifetime = new WaitForSeconds(Random.Range(_minLifetime, _maxLifetime));
 			yield return _waitLifetime;
+			
+			_bombSpawner.SpawnAt(transform.position);
 			gameObject.SetActive(false);
 		}
 

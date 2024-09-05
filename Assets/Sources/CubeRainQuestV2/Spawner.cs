@@ -6,60 +6,65 @@ namespace CubeRainV2
 {
 	public class Spawner<T> : MonoBehaviour where T: MonoBehaviour
 	{
-	[SerializeField] private T _prefab;
-	[SerializeField] private float _delay = 3f;
-	[SerializeField] private float _randomSpreadX = 1.1f;
-	[SerializeField] private float _randomSpreadZ = 1.1f;
-	[SerializeField] private int _startAmount = 1;
-	[SerializeField] private bool _isAutoSpawn = false;
+		[SerializeField] private T _prefab;
+		[SerializeField] private float _delay = 3f;
+		[SerializeField] private float _randomSpreadX = 1.1f;
+		[SerializeField] private float _randomSpreadZ = 1.1f;
+		[SerializeField] private int _startAmount = 1;
+		[SerializeField] private bool _isAutoSpawn = false;
 
-	private Pool<T> _pool;
-	private WaitForSeconds _waitSpawn;
+		protected Pool<T> _pool;
+		private WaitForSeconds _waitSpawn;
 
-	private void Awake()
-	{
-		_pool = new Pool<T>(_prefab, transform, transform, _startAmount);
-		_waitSpawn = new WaitForSeconds(_delay);
-	}
-
-	private void Start()
-	{
-		if (_isAutoSpawn)
-			StartCoroutine(RandomSpawning());
-	}
-
-	public void Reset()
-	{
-		_pool.Reset();
-	}
-
-	public void SpawnAt(Vector3 position)
-	{
-		T spawnedObject = _pool.Peek();
-		spawnedObject.transform.position = position;
-	}
-
-	private IEnumerator RandomSpawning()
-	{
-		while (enabled)
+		private void Awake()
 		{
-			SpawnAtRandom();
-			yield return _waitSpawn;
+			_pool = new Pool<T>(_prefab, transform, transform, _startAmount);
+			_waitSpawn = new WaitForSeconds(_delay);
 		}
-	}
 
-	private void SpawnAtRandom()
-	{
-		float spawnPositionX = Random.Range(transform.position.x - _randomSpreadX,
-			transform.position.x + _randomSpreadX);
-		float spawnPositionZ = Random.Range(transform.position.z - _randomSpreadZ,
-			transform.position.z + _randomSpreadZ);
-		Vector3 spawnPosition = new Vector3(spawnPositionX,
-			transform.position.y,
-			spawnPositionZ);
+		private void Start()
+		{
+			if (_isAutoSpawn)
+				StartCoroutine(RandomSpawning());
+		}
 
-		T spawnedObject = _pool.Peek();
-		spawnedObject.transform.position = spawnPosition;
-	}
+		public void Reset()
+		{
+			_pool.Reset();
+		}
+
+		public void SpawnAt(Vector3 position)
+		{
+			T spawnedObject = _pool.Peek();
+			spawnedObject.transform.position = position;
+		}
+
+		private IEnumerator RandomSpawning()
+		{
+			while (enabled)
+			{
+				SpawnAtRandom();
+				yield return _waitSpawn;
+			}
+		}
+
+		protected virtual void SpawnAtRandom()
+		{
+			T spawnedObject = _pool.Peek();
+			spawnedObject.transform.position = GetRandomSpawnPosition();
+		}
+
+		protected Vector3 GetRandomSpawnPosition()
+		{
+			float spawnPositionX = Random.Range(transform.position.x - _randomSpreadX,
+				transform.position.x + _randomSpreadX);
+			float spawnPositionZ = Random.Range(transform.position.z - _randomSpreadZ,
+				transform.position.z + _randomSpreadZ);
+			Vector3 spawnPosition = new Vector3(spawnPositionX,
+				transform.position.y,
+				spawnPositionZ);
+
+			return spawnPosition;
+		}
 	}
 }
