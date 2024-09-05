@@ -23,7 +23,7 @@ namespace QuestExplosiveCubeV2
 		private ExplosiveCube SpawnCube(float currentSplitChance)
 		{
 			ExplosiveCube cube = Instantiate(_cubePrefab, transform.position, transform.rotation);
-			cube.Decrease(transform.localScale, currentSplitChance);
+			cube.Initialize(transform.localScale, currentSplitChance);
 			return cube;
 		}
 	}    

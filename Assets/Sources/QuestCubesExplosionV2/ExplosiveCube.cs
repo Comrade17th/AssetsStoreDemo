@@ -30,22 +30,17 @@ namespace QuestExplosiveCubeV2
         public void OnClick()
         {
             if (IsSplitChance())
-            {
-                ExplosiveCube[] cubes =  _spawner.SpawnGroup(_currentSplitChance);
-                _explosion.ExplodeGroup(cubes);
-            }
+                _explosion.ExplodeGroup(_spawner.SpawnGroup(_currentSplitChance));
             else
-            {
                 _explosion.ExplodeAround();
-            }
             
             Destroy(gameObject);
         }
 
-        public void Decrease(Vector3 parentScale, float _parentSplitChance)
+        public void Initialize(Vector3 parentScale, float parentSplitChance)
         {
             transform.localScale = parentScale * _scaleModifier;
-            _currentSplitChance = _parentSplitChance * _splitChanceModifier;
+            _currentSplitChance = parentSplitChance * _splitChanceModifier;
         }
 
         private bool IsSplitChance()

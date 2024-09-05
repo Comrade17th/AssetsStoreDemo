@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 namespace QuestExplosiveCubeV2
@@ -6,7 +7,7 @@ namespace QuestExplosiveCubeV2
 	public class Explosion : MonoBehaviour
 	{
 		[SerializeField] private float _modifier = 100f;
-		[SerializeField] private float _power = 10f;
+		[SerializeField] private float _power = 1000f;
 		[SerializeField] private float _radius = 5f;
 		[SerializeField] private float _upwardsModifier = 3f;
 
@@ -18,22 +19,13 @@ namespace QuestExplosiveCubeV2
 			Collider[] colliders = Physics.OverlapSphere(
 				transform.position,
 				radius);
-            
-			foreach (Collider hit in colliders)
-			{
-				Rigidbody rigidbody = hit.GetComponent<Rigidbody>();
-
-				if (rigidbody != null)
-					rigidbody.AddExplosionForce(power,
-						transform.position,
-						radius,
-						_upwardsModifier);
-			}
+			Debug.Log(colliders.Count());
+			ExplodeGroup(colliders);
 		}
 
-		public void ExplodeGroup(ExplosiveCube[] cubes)
+		public void ExplodeGroup<T>(T[] cubes) where T : Component
 		{
-			foreach (ExplosiveCube cube in cubes)
+			foreach (T cube in cubes)
 			{
 				Rigidbody rigidbody = cube.GetComponent<Rigidbody>();
 				rigidbody.AddExplosionForce(
