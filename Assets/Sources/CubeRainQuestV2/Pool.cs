@@ -1,16 +1,28 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using System;
 
 namespace CubeRainV2
 {
-	public class Pool<Template> where Template : MonoBehaviour
+	public class Pool<Template> where Template : MonoBehaviour, ISpawnable
 	{
+		public event Action<int> EntitiesCountChanged;
+		public event Action<int> SpawnsCountChanged;
+		public event Action<int> ActiveCountChanged;
+
+		public event Action<Vector3> SpawnableDestroyed;
+		
 		private readonly List<Template> _pool = new();
 
 		private readonly Template _prefab;
 		private readonly Transform _container;
 		private readonly Transform _spawnPoint;
 		private readonly int _startAmount;
+
+		private int _entitiesCount = 0;
+		private int _spawnsCount = 0;
+		private int _activeCount = 0;
 
 		private int PoolCount => _pool.Count;
 
@@ -33,6 +45,9 @@ namespace CubeRainV2
 			{
 				template.gameObject.SetActive(false);
 			}
+
+			_activeCount = 0;
+			ActiveCountChanged?.Invoke(_activeCount);
 		}
 
 		public Template Peek()
@@ -43,6 +58,8 @@ namespace CubeRainV2
 			}
 
 			template.gameObject.SetActive(true);
+			_activeCount++;
+			ActiveCountChanged?.Invoke(_activeCount);
 			return template;
 		}
 
@@ -64,11 +81,22 @@ namespace CubeRainV2
 
 		private Template Create()
 		{
-			Template template = Object.Instantiate(_prefab, _container, _spawnPoint);
+			Template template = UnityEngine.Object.Instantiate(_prefab, _container, _spawnPoint);
+			template.NeedDestroy += OnTemplateDestroy;
+			_entitiesCount++;
+			EntitiesCountChanged?.Invoke(_entitiesCount);
 			template.gameObject.SetActive(false);
 			_pool.Add(template);
 
 			return template;
+		}
+
+		private void OnTemplateDestroy(ISpawnable spawnable, Vector3 position)
+		{
+			_activeCount--;
+			ActiveCountChanged?.Invoke(_activeCount);
+			spawnable.Destroy();
+			SpawnableDestroyed?.Invoke(position);
 		}
 	}
 }

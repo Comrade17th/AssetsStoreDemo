@@ -1,11 +1,16 @@
 using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using System;
 
 namespace CubeRainV2
 {
-	public class Spawner<T> : MonoBehaviour where T: MonoBehaviour
+	public class Spawner<T> : MonoBehaviour where T: MonoBehaviour, ISpawnable
 	{
+		public event Action<int> EntitiesCountChanged;
+		public event Action<int> SpawnsCountChanged;
+		public event Action<int> ActiveCountChanged;
+		
 		[SerializeField] private T _prefab;
 		[SerializeField] private float _delay = 3f;
 		[SerializeField] private float _randomSpreadX = 1.1f;
@@ -20,6 +25,20 @@ namespace CubeRainV2
 		{
 			_pool = new Pool<T>(_prefab, transform, transform, _startAmount);
 			_waitSpawn = new WaitForSeconds(_delay);
+		}
+
+		private void OnEnable()
+		{
+			_pool.EntitiesCountChanged += OnEntitiesCountChanged;
+			_pool.ActiveCountChanged += OnActiveCountChanged;
+			_pool.SpawnsCountChanged += OnSpawnsCountChanged;
+		}
+
+		private void OnDisable()
+		{
+			_pool.EntitiesCountChanged -= OnEntitiesCountChanged;
+			_pool.ActiveCountChanged -= OnActiveCountChanged;
+			_pool.SpawnsCountChanged -= OnSpawnsCountChanged;
 		}
 
 		private void Start()
@@ -37,6 +56,21 @@ namespace CubeRainV2
 		{
 			T spawnedObject = _pool.Peek();
 			spawnedObject.transform.position = position;
+		}
+
+		private void OnEntitiesCountChanged(int count)
+		{
+			EntitiesCountChanged?.Invoke(count);
+		}
+		
+		private void OnSpawnsCountChanged(int count)
+		{
+			SpawnsCountChanged?.Invoke(count);
+		}
+		
+		private void OnActiveCountChanged(int count)
+		{
+			ActiveCountChanged?.Invoke(count);
 		}
 
 		private IEnumerator RandomSpawning()

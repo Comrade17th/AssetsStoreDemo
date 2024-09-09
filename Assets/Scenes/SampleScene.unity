@@ -2044,7 +2044,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _prefab: {fileID: 7265270938930427601, guid: 48cb5576a28524cb5bb434a7e540271c, type: 3}
-  _delay: 3
+  _delay: 1.2
   _randomSpreadX: 1.1
   _randomSpreadZ: 1.1
   _startAmount: 1

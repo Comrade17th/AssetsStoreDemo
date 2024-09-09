@@ -8,8 +8,10 @@ using DG.Tweening;
 namespace CubeRainV2
 {
 	[RequireComponent(typeof(Explosion))]
-	public class Bomb : MonoBehaviour
+	public class Bomb : MonoBehaviour, ISpawnable
 	{
+		public event Action<ISpawnable, Vector3> NeedDestroy; 
+		
 		[SerializeField] private float _minTimeExlposion = 2;
 		[SerializeField] private float _maxTimeExlposion = 5;
 
@@ -39,6 +41,11 @@ namespace CubeRainV2
 			_coroutine = StartCoroutine(GettingExplode());
 		}
 		
+		public void Destroy()
+		{
+			gameObject.SetActive(false);
+		}
+		
 		private IEnumerator GettingExplode()
 		{
 			float time = Random.Range(_minTimeExlposion, _maxTimeExlposion);
@@ -48,7 +55,7 @@ namespace CubeRainV2
 			yield return _waitExplode;
 			
 			_explosion.Explode();
-			gameObject.SetActive(false);
+			NeedDestroy?.Invoke(this, transform.position);
 		}
 	}    
 }
