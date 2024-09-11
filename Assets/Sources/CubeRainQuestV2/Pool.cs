@@ -14,7 +14,9 @@ namespace CubeRainV2
 		public event Action<Vector3> SpawnableDestroyed;
 		
 		private readonly List<Template> _pool = new();
-
+		/// <summary>
+		/// queue with disabled templates
+		/// </summary>
 		private readonly Template _prefab;
 		private readonly Transform _container;
 		private readonly Transform _spawnPoint;
