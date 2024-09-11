@@ -61,16 +61,19 @@ namespace CubeRainV2
 		private void OnEntitiesCountChanged(int count)
 		{
 			EntitiesCountChanged?.Invoke(count);
+			Debug.Log($"Entites {count}");
 		}
 		
 		private void OnSpawnsCountChanged(int count)
 		{
 			SpawnsCountChanged?.Invoke(count);
+			Debug.Log($"Spawns {count}");
 		}
 		
 		private void OnActiveCountChanged(int count)
 		{
 			ActiveCountChanged?.Invoke(count);
+			Debug.Log($"Active {count}");
 		}
 
 		private IEnumerator RandomSpawning()

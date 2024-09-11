@@ -81,10 +81,12 @@ namespace CubeRainV2
 
 		private Template Create()
 		{
+			
 			Template template = UnityEngine.Object.Instantiate(_prefab, _container, _spawnPoint);
 			template.NeedDestroy += OnTemplateDestroy;
 			_entitiesCount++;
 			EntitiesCountChanged?.Invoke(_entitiesCount);
+			Debug.Log($"Created {_entitiesCount}");
 			template.gameObject.SetActive(false);
 			_pool.Add(template);
 

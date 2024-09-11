@@ -5,7 +5,7 @@ using CubeRainV2;
 using UnityEngine;
 using TMPro;
 
-public class SpawnerView<T> : MonoBehaviour where T: Spawner<MonoBehaviour, ISpawnable>
+public class SpawnerView<T> : MonoBehaviour where T: MonoBehaviour, ISpawnable
 {
     [SerializeField] private Spawner<T> _spawner;
     [SerializeField] private TextMeshProUGUI _activeCount;
