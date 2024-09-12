@@ -5,13 +5,11 @@ using System;
 
 namespace CubeRainV2
 {
-	public class Pool<Template> where Template : SpawnableObject
+	public class Pool<T> where T : MonoBehaviour//, ISpawnable<T> 
 	{
-		
-		
-		private readonly List<Template> _templates = new();
-		private Queue<Template> _queue = new();
-		private readonly Template _prefab;
+		private readonly List<T> _templates = new();
+		private Queue<T> _queue = new();
+		private readonly T _prefab;
 		private readonly Transform _container;
 		private readonly Transform _spawnPoint;
 		private readonly int _startAmount;
@@ -21,7 +19,7 @@ namespace CubeRainV2
 		public int EntitiesCount => _entitiesCount;
 		private int PoolCount => _templates.Count;
 
-		public Pool(Template prefab, Transform container, Transform spawnPoint, int startAmount)
+		public Pool(T prefab, Transform container, Transform spawnPoint, int startAmount)
 		{
 			_prefab = prefab;
 			_container = container;
@@ -34,15 +32,15 @@ namespace CubeRainV2
 			}
 		}
 		
-		public void Release(Template template)
+		public void Release(T template)
 		{
-			template.gameObject.SetActive(false);
+			// template.gameObject.SetActive(false);
 			_queue.Enqueue(template);
 		}
 		
-		public Template Get()
+		public T Get()
 		{
-			if (_queue.TryDequeue(out Template template) == false)
+			if (_queue.TryDequeue(out T template) == false)
 			{
 				Create();
 				template = _queue.Dequeue();
@@ -51,9 +49,9 @@ namespace CubeRainV2
 			return template;
 		}
 		
-		private Template Create()
+		private T Create()
 		{
-			Template template = UnityEngine.Object.Instantiate(_prefab, _container, _spawnPoint);
+			T template = UnityEngine.Object.Instantiate(_prefab, _container, _spawnPoint);
 			_entitiesCount++;
 			template.gameObject.SetActive(false);
 			_templates.Add(template);

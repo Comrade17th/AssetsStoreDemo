@@ -8,9 +8,9 @@ namespace CubeRainV2
 {
 	[RequireComponent(typeof(Rigidbody),
 		typeof(MeshRenderer))]
-	public class RainyCube : SpawnableObject
+	public class RainyCube : MonoBehaviour, ISpawnable<RainyCube>
 	{
-		//public event Action<this> NeedDestroy; 
+		public event Action<RainyCube> Destroying; 
 		
 		[SerializeField] private Color _defaultColor;
 		[SerializeField] private float _minLifetime = 2f;
@@ -60,7 +60,7 @@ namespace CubeRainV2
 		{
 			_waitLifetime = new WaitForSeconds(Random.Range(_minLifetime, _maxLifetime));
 			yield return _waitLifetime;
-			OnDestroying();
+			Destroying?.Invoke(this);
 		}
 
 		private void Reset()

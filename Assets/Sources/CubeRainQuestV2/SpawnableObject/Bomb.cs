@@ -1,16 +1,15 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using DG.Tweening;
-/*
+
 namespace CubeRainV2
 {
 	[RequireComponent(typeof(Explosion))]
-	public class Bomb : MonoBehaviour, ISpawnable
+	public class Bomb : MonoBehaviour, ISpawnable<Bomb>
 	{
-		public event Action<MonoBehaviour, ISpawnable, Vector3> NeedDestroy; 
+		public event Action<Bomb> Destroying; 
 		
 		[SerializeField] private float _minTimeExlposion = 2;
 		[SerializeField] private float _maxTimeExlposion = 5;
@@ -23,7 +22,7 @@ namespace CubeRainV2
 		private WaitForSeconds _waitExplode;
 		private Explosion _explosion;
 		private Color _defaultColor;
-
+		
 		private void Awake()
 		{
 			_explosion = GetComponent<Explosion>();
@@ -50,9 +49,7 @@ namespace CubeRainV2
 			yield return _waitExplode;
 			
 			_explosion.Explode();
-			NeedDestroy?.Invoke(this, transform.position);
+			Destroying?.Invoke(this);
 		}
 	}    
 }
-
-*/

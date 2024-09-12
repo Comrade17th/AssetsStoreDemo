@@ -5,7 +5,7 @@ using System;
 
 namespace CubeRainV2
 {
-	public class Spawner<T> : MonoBehaviour where T: SpawnableObject
+	public class Spawner<T> : MonoBehaviour where T: MonoBehaviour, ISpawnable<T>
 	{
 		[SerializeField] private T _prefab;
 		[SerializeField] private float _delay = 3f;
@@ -20,7 +20,7 @@ namespace CubeRainV2
 		private WaitForSeconds _waitSpawn;
 		
 		public event Action<int, int, int> CounterChanged;
-
+		
 		private void Awake()
 		{
 			_pool = new Pool<T>(_prefab, transform, transform, _startAmount);
@@ -34,13 +34,7 @@ namespace CubeRainV2
 			if (_isAutoSpawn)
 				StartCoroutine(RandomSpawning());
 		}
-
-		// public void SpawnAt(Vector3 position)
-		// {
-		// 	T spawnedObject = Spawn();
-		// 	spawnedObject.transform.position = position;
-		// }
-
+		
 		protected virtual void SpawnAtRandom()
 		{
 			T spawnedObject = Spawn();
@@ -64,18 +58,19 @@ namespace CubeRainV2
 		{
 			T spawnedObject = _pool.Get();
 
-			// spawnedObject.Destroying += OnSpawnedDestroy;
+			spawnedObject.Destroying += OnSpawnedDestroy;
 			
 			spawnedObject.gameObject.SetActive(true);
 			CounterChanged?.Invoke(_pool.EntitiesCount, ++_activeCount, ++_spawnsCount);
 			return spawnedObject;
 		}
 
-		private void OnSpawnedDestroy(T spawnableObject)
+		protected virtual void OnSpawnedDestroy(T spawnableObject)
 		{
+			spawnableObject.Destroying -= OnSpawnedDestroy;
 			spawnableObject.gameObject.SetActive(false);
 			_pool.Release(spawnableObject);
-			CounterChanged.Invoke(_pool.EntitiesCount, --_activeCount, _spawnsCount);
+			CounterChanged?.Invoke(_pool.EntitiesCount, --_activeCount, _spawnsCount);
 		}
 		
 		private IEnumerator RandomSpawning()
