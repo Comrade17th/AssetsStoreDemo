@@ -60,7 +60,7 @@ namespace CubeRainV2
 		{
 			_waitLifetime = new WaitForSeconds(Random.Range(_minLifetime, _maxLifetime));
 			yield return _waitLifetime;
-			OnNeedDestroy();
+			OnDestroying();
 		}
 
 		private void Reset()

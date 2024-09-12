@@ -7,9 +7,9 @@ namespace CubeRainV2
 {
 	public class Pool<Template> where Template : SpawnableObject
 	{
-		public int EntitiesCount => _entitiesCount;
 		
-		private readonly List<Template> _pool = new();
+		
+		private readonly List<Template> _templates = new();
 		private Queue<Template> _queue = new();
 		private readonly Template _prefab;
 		private readonly Transform _container;
@@ -18,7 +18,8 @@ namespace CubeRainV2
 
 		private int _entitiesCount = 0;
 
-		private int PoolCount => _pool.Count;
+		public int EntitiesCount => _entitiesCount;
+		private int PoolCount => _templates.Count;
 
 		public Pool(Template prefab, Transform container, Transform spawnPoint, int startAmount)
 		{
@@ -33,7 +34,7 @@ namespace CubeRainV2
 			}
 		}
 		
-		public void Return(Template template)
+		public void Release(Template template)
 		{
 			template.gameObject.SetActive(false);
 			_queue.Enqueue(template);
@@ -55,7 +56,7 @@ namespace CubeRainV2
 			Template template = UnityEngine.Object.Instantiate(_prefab, _container, _spawnPoint);
 			_entitiesCount++;
 			template.gameObject.SetActive(false);
-			_pool.Add(template);
+			_templates.Add(template);
 			_queue.Enqueue(template);
 
 			return template;

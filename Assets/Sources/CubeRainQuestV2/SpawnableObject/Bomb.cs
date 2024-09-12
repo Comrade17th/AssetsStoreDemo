@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using DG.Tweening;
-
+/*
 namespace CubeRainV2
 {
 	[RequireComponent(typeof(Explosion))]
@@ -55,3 +55,4 @@ namespace CubeRainV2
 	}    
 }
 
+*/

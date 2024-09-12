@@ -6,10 +6,10 @@ using System;
 
 public abstract class SpawnableObject : MonoBehaviour
 {
-    public event Action<SpawnableObject> NeedDestoy;
+    public event Action<SpawnableObject> Destroying;
     
-    protected virtual void OnNeedDestroy()
+    protected virtual void OnDestroying()
     {
-            NeedDestoy?.Invoke(this);
+	    Destroying?.Invoke(this);
     }
 }

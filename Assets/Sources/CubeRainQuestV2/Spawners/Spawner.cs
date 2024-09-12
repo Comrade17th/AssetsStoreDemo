@@ -7,8 +7,6 @@ namespace CubeRainV2
 {
 	public class Spawner<T> : MonoBehaviour where T: SpawnableObject
 	{
-		public event Action<int, int, int> CounterChanged;
-		
 		[SerializeField] private T _prefab;
 		[SerializeField] private float _delay = 3f;
 		[SerializeField] private float _randomSpreadX = 1.1f;
@@ -16,12 +14,12 @@ namespace CubeRainV2
 		[SerializeField] private int _startAmount = 1;
 		[SerializeField] private bool _isAutoSpawn = false;
 
-		protected Pool<T> _pool;
-		private WaitForSeconds _waitSpawn;
-
-		private int _entitiesCount => _pool.EntitiesCount;
+		private Pool<T> _pool;
 		private int _activeCount = 0;
 		private int _spawnsCount = 0;
+		private WaitForSeconds _waitSpawn;
+		
+		public event Action<int, int, int> CounterChanged;
 
 		private void Awake()
 		{
@@ -31,17 +29,17 @@ namespace CubeRainV2
 
 		private void Start()
 		{
-			CounterChanged.Invoke(_entitiesCount, _activeCount, _spawnsCount);
+			CounterChanged?.Invoke(_pool.EntitiesCount, _activeCount, _spawnsCount);
 			
 			if (_isAutoSpawn)
 				StartCoroutine(RandomSpawning());
 		}
 
-		public void SpawnAt(Vector3 position)
-		{
-			T spawnedObject = Spawn();
-			spawnedObject.transform.position = position;
-		}
+		// public void SpawnAt(Vector3 position)
+		// {
+		// 	T spawnedObject = Spawn();
+		// 	spawnedObject.transform.position = position;
+		// }
 
 		protected virtual void SpawnAtRandom()
 		{
@@ -62,22 +60,22 @@ namespace CubeRainV2
 			return spawnPosition;
 		}
 
-		private T Spawn()
+		protected T Spawn()
 		{
 			T spawnedObject = _pool.Get();
 
-			spawnedObject.NeedDestroy += OnSpawnedDestroy;
+			// spawnedObject.Destroying += OnSpawnedDestroy;
 			
 			spawnedObject.gameObject.SetActive(true);
-			CounterChanged.Invoke(_entitiesCount, ++_activeCount, ++_spawnsCount);
+			CounterChanged?.Invoke(_pool.EntitiesCount, ++_activeCount, ++_spawnsCount);
 			return spawnedObject;
 		}
 
 		private void OnSpawnedDestroy(T spawnableObject)
 		{
 			spawnableObject.gameObject.SetActive(false);
-			_pool.Return(spawnableObject);
-			CounterChanged.Invoke(_entitiesCount, --_activeCount, _spawnsCount);
+			_pool.Release(spawnableObject);
+			CounterChanged.Invoke(_pool.EntitiesCount, --_activeCount, _spawnsCount);
 		}
 		
 		private IEnumerator RandomSpawning()
