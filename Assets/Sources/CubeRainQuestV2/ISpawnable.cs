@@ -5,7 +5,5 @@ using UnityEngine;
 
 public interface ISpawnable
 {
-    public event Action<ISpawnable, Vector3> NeedDestroy; 
-    
-    public void Destroy();
+    public event Action<MonoBehaviour ,ISpawnable> NeedDestroy; 
 }

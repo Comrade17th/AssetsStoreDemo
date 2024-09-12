@@ -5,11 +5,9 @@ using System;
 
 namespace CubeRainV2
 {
-	public class Spawner<T> : MonoBehaviour where T: MonoBehaviour, ISpawnable
+	public class Spawner<T> : MonoBehaviour where T: SpawnableObject
 	{
-		public event Action<int> EntitiesCountChanged;
-		public event Action<int> SpawnsCountChanged;
-		public event Action<int> ActiveCountChanged;
+		public event Action<int, int, int> CounterChanged;
 		
 		[SerializeField] private T _prefab;
 		[SerializeField] private float _delay = 3f;
@@ -21,73 +19,33 @@ namespace CubeRainV2
 		protected Pool<T> _pool;
 		private WaitForSeconds _waitSpawn;
 
+		private int _entitiesCount => _pool.EntitiesCount;
+		private int _activeCount = 0;
+		private int _spawnsCount = 0;
+
 		private void Awake()
 		{
 			_pool = new Pool<T>(_prefab, transform, transform, _startAmount);
 			_waitSpawn = new WaitForSeconds(_delay);
 		}
 
-		private void OnEnable()
-		{
-			_pool.EntitiesCountChanged += OnEntitiesCountChanged;
-			_pool.ActiveCountChanged += OnActiveCountChanged;
-			_pool.SpawnsCountChanged += OnSpawnsCountChanged;
-		}
-
-		private void OnDisable()
-		{
-			_pool.EntitiesCountChanged -= OnEntitiesCountChanged;
-			_pool.ActiveCountChanged -= OnActiveCountChanged;
-			_pool.SpawnsCountChanged -= OnSpawnsCountChanged;
-		}
-
 		private void Start()
 		{
+			CounterChanged.Invoke(_entitiesCount, _activeCount, _spawnsCount);
+			
 			if (_isAutoSpawn)
 				StartCoroutine(RandomSpawning());
 		}
 
-		public void Reset()
-		{
-			_pool.Reset();
-		}
-
 		public void SpawnAt(Vector3 position)
 		{
-			T spawnedObject = _pool.Peek();
+			T spawnedObject = Spawn();
 			spawnedObject.transform.position = position;
-		}
-
-		private void OnEntitiesCountChanged(int count)
-		{
-			EntitiesCountChanged?.Invoke(count);
-			Debug.Log($"Entites {count}");
-		}
-		
-		private void OnSpawnsCountChanged(int count)
-		{
-			SpawnsCountChanged?.Invoke(count);
-			Debug.Log($"Spawns {count}");
-		}
-		
-		private void OnActiveCountChanged(int count)
-		{
-			ActiveCountChanged?.Invoke(count);
-			Debug.Log($"Active {count}");
-		}
-
-		private IEnumerator RandomSpawning()
-		{
-			while (enabled)
-			{
-				SpawnAtRandom();
-				yield return _waitSpawn;
-			}
 		}
 
 		protected virtual void SpawnAtRandom()
 		{
-			T spawnedObject = _pool.Peek();
+			T spawnedObject = Spawn();
 			spawnedObject.transform.position = GetRandomSpawnPosition();
 		}
 
@@ -102,6 +60,33 @@ namespace CubeRainV2
 				spawnPositionZ);
 
 			return spawnPosition;
+		}
+
+		private T Spawn()
+		{
+			T spawnedObject = _pool.Get();
+
+			spawnedObject.NeedDestroy += OnSpawnedDestroy;
+			
+			spawnedObject.gameObject.SetActive(true);
+			CounterChanged.Invoke(_entitiesCount, ++_activeCount, ++_spawnsCount);
+			return spawnedObject;
+		}
+
+		private void OnSpawnedDestroy(T spawnableObject)
+		{
+			spawnableObject.gameObject.SetActive(false);
+			_pool.Return(spawnableObject);
+			CounterChanged.Invoke(_entitiesCount, --_activeCount, _spawnsCount);
+		}
+		
+		private IEnumerator RandomSpawning()
+		{
+			while (enabled)
+			{
+				SpawnAtRandom();
+				yield return _waitSpawn;
+			}
 		}
 	}
 }

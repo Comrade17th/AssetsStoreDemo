@@ -5,26 +5,18 @@ using System;
 
 namespace CubeRainV2
 {
-	public class Pool<Template> where Template : MonoBehaviour, ISpawnable
+	public class Pool<Template> where Template : SpawnableObject
 	{
-		public event Action<int> EntitiesCountChanged;
-		public event Action<int> SpawnsCountChanged;
-		public event Action<int> ActiveCountChanged;
-
-		public event Action<Vector3> SpawnableDestroyed;
+		public int EntitiesCount => _entitiesCount;
 		
 		private readonly List<Template> _pool = new();
-		/// <summary>
-		/// queue with disabled templates
-		/// </summary>
+		private Queue<Template> _queue = new();
 		private readonly Template _prefab;
 		private readonly Transform _container;
 		private readonly Transform _spawnPoint;
 		private readonly int _startAmount;
 
 		private int _entitiesCount = 0;
-		private int _spawnsCount = 0;
-		private int _activeCount = 0;
 
 		private int PoolCount => _pool.Count;
 
@@ -40,67 +32,33 @@ namespace CubeRainV2
 				Create();
 			}
 		}
-
-		public void Reset()
+		
+		public void Return(Template template)
 		{
-			foreach (Template template in _pool)
-			{
-				template.gameObject.SetActive(false);
-			}
-
-			_activeCount = 0;
-			ActiveCountChanged?.Invoke(_activeCount);
+			template.gameObject.SetActive(false);
+			_queue.Enqueue(template);
 		}
-
-		public Template Peek()
+		
+		public Template Get()
 		{
-			if (TryGetObject(out Template template) == false)
+			if (_queue.TryDequeue(out Template template) == false)
 			{
-				template = Create();
+				Create();
+				template = _queue.Dequeue();
 			}
-
-			template.gameObject.SetActive(true);
-			_activeCount++;
-			ActiveCountChanged?.Invoke(_activeCount);
+			
 			return template;
 		}
-
-		private bool TryGetObject(out Template template)
-		{
-			template = null;
-
-			for (int i = 0; i < PoolCount; i++)
-			{
-				if (_pool[i].gameObject.activeInHierarchy == false)
-				{
-					template = _pool[i];
-					return true;
-				}
-			}
-
-			return false;
-		}
-
+		
 		private Template Create()
 		{
-			
 			Template template = UnityEngine.Object.Instantiate(_prefab, _container, _spawnPoint);
-			template.NeedDestroy += OnTemplateDestroy;
 			_entitiesCount++;
-			EntitiesCountChanged?.Invoke(_entitiesCount);
-			Debug.Log($"Created {_entitiesCount}");
 			template.gameObject.SetActive(false);
 			_pool.Add(template);
+			_queue.Enqueue(template);
 
 			return template;
-		}
-
-		private void OnTemplateDestroy(ISpawnable spawnable, Vector3 position)
-		{
-			_activeCount--;
-			ActiveCountChanged?.Invoke(_activeCount);
-			spawnable.Destroy();
-			SpawnableDestroyed?.Invoke(position);
 		}
 	}
 }

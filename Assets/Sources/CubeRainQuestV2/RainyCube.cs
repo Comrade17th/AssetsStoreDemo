@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -7,9 +8,9 @@ namespace CubeRainV2
 {
 	[RequireComponent(typeof(Rigidbody),
 		typeof(MeshRenderer))]
-	public class RainyCube : MonoBehaviour, ISpawnable
+	public class RainyCube : SpawnableObject
 	{
-		public event Action<ISpawnable, Vector3> NeedDestroy; 
+		//public event Action<this> NeedDestroy; 
 		
 		[SerializeField] private Color _defaultColor;
 		[SerializeField] private float _minLifetime = 2f;
@@ -41,11 +42,6 @@ namespace CubeRainV2
 			}
 		}
 
-		public void Destroy()
-		{
-			gameObject.SetActive(false);
-		}
-
 		private void OnObstucleCollision()
 		{
 			if (_isCollided == false)
@@ -64,7 +60,7 @@ namespace CubeRainV2
 		{
 			_waitLifetime = new WaitForSeconds(Random.Range(_minLifetime, _maxLifetime));
 			yield return _waitLifetime;
-			NeedDestroy?.Invoke(this, transform.position);
+			OnNeedDestroy();
 		}
 
 		private void Reset()

@@ -10,7 +10,7 @@ namespace CubeRainV2
 	[RequireComponent(typeof(Explosion))]
 	public class Bomb : MonoBehaviour, ISpawnable
 	{
-		public event Action<ISpawnable, Vector3> NeedDestroy; 
+		public event Action<MonoBehaviour, ISpawnable, Vector3> NeedDestroy; 
 		
 		[SerializeField] private float _minTimeExlposion = 2;
 		[SerializeField] private float _maxTimeExlposion = 5;
@@ -39,11 +39,6 @@ namespace CubeRainV2
 				StopCoroutine(_coroutine);
 			
 			_coroutine = StartCoroutine(GettingExplode());
-		}
-		
-		public void Destroy()
-		{
-			gameObject.SetActive(false);
 		}
 		
 		private IEnumerator GettingExplode()
