@@ -1,18 +1,16 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using System;
 
 namespace CubeRainV2
 {
-	public class Pool<T> where T : MonoBehaviour//, ISpawnable<T> 
+	public class Pool<T> where T : MonoBehaviour 
 	{
 		private readonly List<T> _templates = new();
-		private Queue<T> _queue = new();
 		private readonly T _prefab;
 		private readonly Transform _container;
 		private readonly Transform _spawnPoint;
 		private readonly int _startAmount;
+		private Queue<T> _queue = new();
 
 		private int _entitiesCount = 0;
 
@@ -34,7 +32,6 @@ namespace CubeRainV2
 		
 		public void Release(T template)
 		{
-			// template.gameObject.SetActive(false);
 			_queue.Enqueue(template);
 		}
 		

@@ -59,9 +59,9 @@ namespace CubeRainV2
 			T spawnedObject = _pool.Get();
 
 			spawnedObject.Destroying += OnSpawnedDestroy;
-			
 			spawnedObject.gameObject.SetActive(true);
 			CounterChanged?.Invoke(_pool.EntitiesCount, ++_activeCount, ++_spawnsCount);
+			
 			return spawnedObject;
 		}
 

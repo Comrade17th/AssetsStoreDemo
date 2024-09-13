@@ -5020,7 +5020,7 @@ GameObject:
   - component: {fileID: 1687736950}
   - component: {fileID: 1687736951}
   m_Layer: 0
-  m_Name: Cube Spawner View (1)
+  m_Name: Bomb Spawner View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

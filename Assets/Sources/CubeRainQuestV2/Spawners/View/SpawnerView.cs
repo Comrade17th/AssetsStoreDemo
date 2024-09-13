@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using CubeRainV2;
 using UnityEngine;
 using TMPro;
@@ -9,6 +6,7 @@ public class SpawnerView<T> : MonoBehaviour where T: MonoBehaviour, ISpawnable<T
 {
     [SerializeField] private Spawner<T> _spawner;
     [SerializeField] private TextMeshProUGUI _counterTMPro;
+    
     [SerializeField] private string _activeLabel = $"Активно: ";
     [SerializeField] private string _entititesLabel = $"Создано: ";
     [SerializeField] private string _spawnsLabel = $"Заспавнено: ";

@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -10,8 +9,6 @@ namespace CubeRainV2
 		typeof(MeshRenderer))]
 	public class RainyCube : MonoBehaviour, ISpawnable<RainyCube>
 	{
-		public event Action<RainyCube> Destroying; 
-		
 		[SerializeField] private Color _defaultColor;
 		[SerializeField] private float _minLifetime = 2f;
 		[SerializeField] private float _maxLifetime = 5f;
@@ -22,6 +19,8 @@ namespace CubeRainV2
 		private Rigidbody _rigidbody;
 		private Coroutine _coroutine;
 		private WaitForSeconds _waitLifetime;
+		
+		public event Action<RainyCube> Destroying;
 
 		private void Awake()
 		{

@@ -9,8 +9,6 @@ namespace CubeRainV2
 	[RequireComponent(typeof(Explosion))]
 	public class Bomb : MonoBehaviour, ISpawnable<Bomb>
 	{
-		public event Action<Bomb> Destroying; 
-		
 		[SerializeField] private float _minTimeExlposion = 2;
 		[SerializeField] private float _maxTimeExlposion = 5;
 
@@ -22,6 +20,8 @@ namespace CubeRainV2
 		private WaitForSeconds _waitExplode;
 		private Explosion _explosion;
 		private Color _defaultColor;
+		
+		public event Action<Bomb> Destroying; 
 		
 		private void Awake()
 		{
